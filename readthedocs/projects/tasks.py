@@ -6,6 +6,7 @@ rebuilding documentation.
 
 from __future__ import absolute_import
 
+import datetime
 import hashlib
 import json
 import logging
@@ -20,6 +21,7 @@ from celery import Task
 from celery.exceptions import SoftTimeLimitExceeded
 from django.conf import settings
 from django.core.urlresolvers import reverse
+from django.db.models import Q
 from django.utils.translation import ugettext_lazy as _
 from readthedocs_build.config import ConfigError
 from slumber.exceptions import HttpClientError
@@ -1005,3 +1007,15 @@ def sync_callback(_, version_pk, commit, *args, **kwargs):
     """
     fileify(version_pk, commit=commit)
     update_search(version_pk, commit=commit)
+
+
+@app.task()
+def finish_inactive_builds():
+    query = (~Q(state=BUILD_STATE_FINISHED) &
+             Q(date__lte=datetime.datetime.now() - datetime.timedelta(minutes=45)))
+    # TODO: consider ``poject.container_time_limit`` since it could be bigger than 45 minutes
+    for build in Build.objects.filter(query):
+        build.success = False
+        build.state = BUILD_STATE_FINISHED
+        build.error = 'This build was terminated due to inactivity.'
+        build.save()
