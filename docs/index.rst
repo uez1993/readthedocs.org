@@ -1,5 +1,4 @@
-Welcome to Read The Docs
-========================
+Welcome 
 
 `Read the Docs`_ hosts documentation for the open source community.
 We support Sphinx_ docs written with reStructuredText_ and `CommonMark`_.
@@ -34,7 +33,7 @@ Information about development is also available:
 .. _user-docs:
 
 .. toctree::
-   :maxdepth: 2
+  
    :caption: User Documentation
 
    getting_started
@@ -54,8 +53,7 @@ Information about development is also available:
    :maxdepth: 2
    :caption: About Read the Docs
 
-   contribute
-   team
+   
    code-of-conduct
    ethical-advertising
    sponsors
